@@ -718,7 +718,7 @@ window.executePurchase = async () => {
     } finally { hideLoader(); }
 };
 
-// ⭐⭐⭐ NETLIFY BACKEND PAYMENT LOGIC (WITH SAFE ERROR HANDLING) ⭐⭐⭐
+// ⭐⭐⭐ NETLIFY BACKEND PAYMENT LOGIC (WITH SMART VERIFICATION) ⭐⭐⭐
 document.getElementById('btn-proceed-pay').onclick = async () => {
     const amt = parseFloat(document.getElementById('add-amount').value);
     if(!amt || amt < 10) return showToast("Minimum ₹10 required","error");
@@ -728,7 +728,6 @@ document.getElementById('btn-proceed-pay').onclick = async () => {
     document.getElementById('step-processing').classList.remove('hidden');
     
     try {
-        // Apne Netlify Function ko call kar rahe hain
         const response = await fetch('/.netlify/functions/create-order', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -740,7 +739,6 @@ document.getElementById('btn-proceed-pay').onclick = async () => {
             })
         });
         
-        // 🛑 SAFETY CHECK: Agar response JSON nahi hai (matlab 404 HTML page hai)
         const responseText = await response.text();
         let data;
         try {
@@ -750,7 +748,10 @@ document.getElementById('btn-proceed-pay').onclick = async () => {
         }
         
         if(data.success && data.data && data.data.checkout_url) {
+            // Amount aur Order ID dono save kar rahe hain
             localStorage.setItem('pending_tg_order', data.data.order_id);
+            localStorage.setItem('pending_tg_amount', amt.toFixed(2));
+            
             window.location.href = "https://trustgateway.in" + data.data.checkout_url;
         } else {
             throw new Error(data.message || "Failed to create payment order");
@@ -763,40 +764,51 @@ document.getElementById('btn-proceed-pay').onclick = async () => {
     }
 };
 
-// ⭐⭐⭐ REDIRECT CHECK (Wapas aane par) ⭐⭐⭐
+// ⭐⭐⭐ SMART REDIRECT CHECK (Wapas aane par) ⭐⭐⭐
 async function checkPaymentStatusOnLoad() {
     const urlParams = new URLSearchParams(window.location.search);
     if(urlParams.get('payment_success') === 'true') {
-        const pendingOrderId = localStorage.getItem('pending_tg_order');
+        // URL me order_id bhi dhoondhenge, agar gateway bhejta hai toh
+        const pendingOrderId = urlParams.get('order_id') || urlParams.get('txn_id') || localStorage.getItem('pending_tg_order');
+        const pendingAmount = localStorage.getItem('pending_tg_amount');
         
         if(pendingOrderId && currentUser) {
             showLoader();
             try {
                 const res = await fetch(`/.netlify/functions/check-status?order_id=${pendingOrderId}`);
+                const data = await res.json();
+                console.log("Gateway Response:", data);
                 
-                // Safety check for status check as well
-                const resText = await res.text();
-                let data;
-                try {
-                    data = JSON.parse(resText);
-                } catch (pe) {
-                    throw new Error("Backend error during verification.");
+                // Smart Check: Pura data text me convert karke check karo ki 'paid' ya 'success' word hai ya nahi
+                const dataString = JSON.stringify(data).toLowerCase();
+                let isPaid = false;
+                let payAmt = 0;
+
+                if(dataString.includes('"paid":true') || dataString.includes('"status":"success"') || dataString.includes('"status":"paid"') || dataString.includes('"status":"completed"') || data.paid === true) {
+                    isPaid = true;
+                    // Amount dhoondhne ki koshish karo, nahi toh local storage se utha lo
+                    payAmt = parseFloat(data.amount || data.data?.amount || pendingAmount || 0);
                 }
-                
-                if(data.paid === true) {
-                    await runTransaction(ref(db, `users/${currentUser.uid}/balance`), b => (b || 0) + parseFloat(data.amount));
-                    await updateMyPublicStats(parseFloat(data.amount));
-                    showToast("✅ Payment verified! Balance updated.", "success");
+
+                if(isPaid) {
+                    await runTransaction(ref(db, `users/${currentUser.uid}/balance`), b => (b || 0) + payAmt);
+                    await updateMyPublicStats(payAmt);
+                    showToast(`✅ Payment verified! ₹${payAmt} added.`, "success");
                 } else {
-                    showToast("⚠️ Payment status pending. Contact support.", "warning");
+                    // AGAR FAIL HUA TOH POPUP ME ASLI ERROR DIKHEGA
+                    alert("Bhai, Balance add nahi hua kyunki Gateway ne ye bheja hai:\n\n" + JSON.stringify(data, null, 2) + "\n\nIska screenshot mujhe bhejna!");
+                    showToast("Payment verify nahi hua. Check popup.", "error");
                 }
             } catch(e) {
-                showToast("Could not verify payment. Contact support.", "error");
+                alert("Server Error: " + e.message);
             } finally {
                 hideLoader();
                 localStorage.removeItem('pending_tg_order');
+                localStorage.removeItem('pending_tg_amount');
                 window.history.replaceState({}, document.title, window.location.pathname);
             }
+        } else {
+            alert("Order ID nahi mili. Kya aapne payment complete kiya tha?");
         }
     }
 }
