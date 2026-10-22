@@ -338,6 +338,7 @@ try { app = initializeApp(firebaseConfig); auth = getAuth(app); db = getDatabase
 
 let currentUser = null, userData = { balance: 0 }, panelsCache = {}, resellerPricesCache = {};
 let usersDataCache = {}, lastPublicStats = null, previousBalance = 0;
+let isProcessingPayment = false; // 🛑 Payment Lock Flag
 const authScreen = document.getElementById('auth-screen');
 const mainApp = document.getElementById('main-app');
 
@@ -718,7 +719,7 @@ window.executePurchase = async () => {
     } finally { hideLoader(); }
 };
 
-// ⭐⭐⭐ NETLIFY BACKEND PAYMENT LOGIC (WITH SMART VERIFICATION) ⭐⭐⭐
+// ⭐⭐⭐ NETLIFY BACKEND PAYMENT LOGIC ⭐⭐⭐
 document.getElementById('btn-proceed-pay').onclick = async () => {
     const amt = parseFloat(document.getElementById('add-amount').value);
     if(!amt || amt < 10) return showToast("Minimum ₹10 required","error");
@@ -764,52 +765,84 @@ document.getElementById('btn-proceed-pay').onclick = async () => {
     }
 };
 
-// ⭐⭐⭐ SMART REDIRECT CHECK (Wapas aane par) ⭐⭐⭐
+// ⭐⭐⭐ SMART REDIRECT CHECK (Wapas aane par - DOUBLE SPENDING FIX) ⭐⭐⭐
 async function checkPaymentStatusOnLoad() {
+    if(isProcessingPayment) return; // Agar pehle se process ho raha hai toh ruk jao
+    isProcessingPayment = true;
+
     const urlParams = new URLSearchParams(window.location.search);
     if(urlParams.get('payment_success') === 'true') {
-        // URL me order_id bhi dhoondhenge, agar gateway bhejta hai toh
-        const pendingOrderId = urlParams.get('order_id') || urlParams.get('txn_id') || localStorage.getItem('pending_tg_order');
+        
+        // 🛑 SABSE PEHLE URL AUR STORAGE SAaf KARO (Taaki refresh pe dubara na chale)
+        window.history.replaceState({}, document.title, window.location.pathname);
+        
+        const pendingOrderId = urlParams.get('order_id') || localStorage.getItem('pending_tg_order');
         const pendingAmount = localStorage.getItem('pending_tg_amount');
         
+        localStorage.removeItem('pending_tg_order');
+        localStorage.removeItem('pending_tg_amount');
+
         if(pendingOrderId && currentUser) {
             showLoader();
             try {
+                // 🔒 CHECK 1: Kya ye order pehle hi process ho chuka hai? (F5 Refresh se bachne ke liye)
+                const orderRef = ref(db, `processed_orders/${pendingOrderId}`);
+                const orderSnap = await get(orderRef);
+                
+                if (orderSnap.exists()) {
+                    showToast("✅ Payment already processed. Balance added earlier.", "info");
+                    hideLoader();
+                    isProcessingPayment = false;
+                    return;
+                }
+
+                // Agar nahi hua hai, toh Gateway se status check karo
                 const res = await fetch(`/.netlify/functions/check-status?order_id=${pendingOrderId}`);
                 const data = await res.json();
                 console.log("Gateway Response:", data);
                 
-                // Smart Check: Pura data text me convert karke check karo ki 'paid' ya 'success' word hai ya nahi
                 const dataString = JSON.stringify(data).toLowerCase();
                 let isPaid = false;
                 let payAmt = 0;
 
                 if(dataString.includes('"paid":true') || dataString.includes('"status":"success"') || dataString.includes('"status":"paid"') || dataString.includes('"status":"completed"') || data.paid === true) {
                     isPaid = true;
-                    // Amount dhoondhne ki koshish karo, nahi toh local storage se utha lo
                     payAmt = parseFloat(data.amount || data.data?.amount || pendingAmount || 0);
                 }
 
-                if(isPaid) {
-                    await runTransaction(ref(db, `users/${currentUser.uid}/balance`), b => (b || 0) + payAmt);
-                    await updateMyPublicStats(payAmt);
-                    showToast(`✅ Payment verified! ₹${payAmt} added.`, "success");
+                if(isPaid && payAmt > 0) {
+                    // 🔒 CHECK 2: Firebase Transaction Lock (Double entry hamesha ke liye band)
+                    const txResult = await runTransaction(orderRef, (currentData) => {
+                        if (currentData === null) {
+                            return { status: 'completed', amount: payAmt, date: new Date().toISOString() };
+                        } else {
+                            return; // Agar already exists, toh abort
+                        }
+                    });
+
+                    if (txResult.committed) {
+                        // Sirf tabhi balance add karo jab lock lag chuka ho
+                        await runTransaction(ref(db, `users/${currentUser.uid}/balance`), b => (b || 0) + payAmt);
+                        await updateMyPublicStats(payAmt);
+                        showToast(`✅ Payment verified! ₹${payAmt} added.`, "success");
+                    } else {
+                        showToast("⚠️ Payment already processed.", "warning");
+                    }
                 } else {
-                    // AGAR FAIL HUA TOH POPUP ME ASLI ERROR DIKHEGA
-                    alert("Bhai, Balance add nahi hua kyunki Gateway ne ye bheja hai:\n\n" + JSON.stringify(data, null, 2) + "\n\nIska screenshot mujhe bhejna!");
-                    showToast("Payment verify nahi hua. Check popup.", "error");
+                    showToast("⚠️ Payment status pending or invalid. Contact support.", "warning");
                 }
             } catch(e) {
-                alert("Server Error: " + e.message);
+                console.error(e);
+                showToast("Error verifying payment.", "error");
             } finally {
                 hideLoader();
-                localStorage.removeItem('pending_tg_order');
-                localStorage.removeItem('pending_tg_amount');
-                window.history.replaceState({}, document.title, window.location.pathname);
+                isProcessingPayment = false;
             }
         } else {
-            alert("Order ID nahi mili. Kya aapne payment complete kiya tha?");
+            isProcessingPayment = false;
         }
+    } else {
+        isProcessingPayment = false;
     }
 }
 
