@@ -749,10 +749,8 @@ document.getElementById('btn-proceed-pay').onclick = async () => {
         }
         
         if(data.success && data.data && data.data.checkout_url) {
-            // Amount aur Order ID dono save kar rahe hain
             localStorage.setItem('pending_tg_order', data.data.order_id);
             localStorage.setItem('pending_tg_amount', amt.toFixed(2));
-            
             window.location.href = "https://trustgateway.in" + data.data.checkout_url;
         } else {
             throw new Error(data.message || "Failed to create payment order");
@@ -773,14 +771,11 @@ async function checkPaymentStatusOnLoad() {
     const urlParams = new URLSearchParams(window.location.search);
     if(urlParams.get('payment_success') === 'true') {
         
-        // 🛑 SABSE PEHLE URL AUR STORAGE SAaf KARO (Taaki refresh pe dubara na chale)
+        // URL saaf karo
         window.history.replaceState({}, document.title, window.location.pathname);
         
         const pendingOrderId = urlParams.get('order_id') || localStorage.getItem('pending_tg_order');
         const pendingAmount = localStorage.getItem('pending_tg_amount');
-        
-        localStorage.removeItem('pending_tg_order');
-        localStorage.removeItem('pending_tg_amount');
 
         if(pendingOrderId && currentUser) {
             showLoader();
@@ -792,6 +787,8 @@ async function checkPaymentStatusOnLoad() {
                 if (orderSnap.exists()) {
                     showToast("✅ Payment already processed. Balance added earlier.", "info");
                     hideLoader();
+                    localStorage.removeItem('pending_tg_order');
+                    localStorage.removeItem('pending_tg_amount');
                     isProcessingPayment = false;
                     return;
                 }
@@ -825,20 +822,29 @@ async function checkPaymentStatusOnLoad() {
                         await runTransaction(ref(db, `users/${currentUser.uid}/balance`), b => (b || 0) + payAmt);
                         await updateMyPublicStats(payAmt);
                         showToast(`✅ Payment verified! ₹${payAmt} added.`, "success");
+                        
+                        // Ab safai karo
+                        localStorage.removeItem('pending_tg_order');
+                        localStorage.removeItem('pending_tg_amount');
                     } else {
                         showToast("⚠️ Payment already processed.", "warning");
                     }
                 } else {
-                    showToast("⚠️ Payment status pending or invalid. Contact support.", "warning");
+                    // ❌ AGAR FAIL HUA TOH POPUP ME ASLI ERROR DIKHEGA
+                    alert("Verification Failed!\n\nGateway Reply:\n" + JSON.stringify(data, null, 2) + "\n\nIska screenshot mujhe bhejna!");
+                    showToast("⚠️ Payment verify nahi hua. Check popup.", "error");
+                    // Order ID delete nahi kar rahe taaki refresh pe dobara try ho sake
                 }
             } catch(e) {
                 console.error(e);
+                alert("Network/Server Error: " + e.message);
                 showToast("Error verifying payment.", "error");
             } finally {
                 hideLoader();
                 isProcessingPayment = false;
             }
         } else {
+            showToast("Order ID missing! Please contact support.", "error");
             isProcessingPayment = false;
         }
     } else {
