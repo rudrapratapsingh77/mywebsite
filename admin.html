@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
+<title>FF.PANEL.STORE | ADMIN PRO</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+:root{--bg-dark:#050505;--surface:#111;--surface-light:#1a1a1a;--border:#2a2a2a;--text-main:#fff;--text-muted:#888;--accent:#bc13fe;--accent-secondary:#00f0ff;--success:#00ff66;--danger:#ff2a5f;--warning:#ffb800;--sidebar-width:260px;--radius:12px;--shadow:0 10px 30px rgba(0,0,0,.5);--font:'Poppins',sans-serif}
+body.light-theme{--bg-dark:#f8fafc;--surface:#fff;--surface-light:#f1f5f9;--border:#e2e8f0;--text-main:#0f172a;--text-muted:#64748b;--shadow:0 10px 30px rgba(0,0,0,.05)}
+*{margin:0;padding:0;box-sizing:border-box;font-family:var(--font)}
+html,body{width:100%;max-width:100%;overflow-x:hidden}
+body{background-color:var(--bg-dark);color:var(--text-main);overflow:hidden;transition:background-color .3s}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:10px}
+.hidden{display:none!important}
+.glass{background:rgba(17,17,17,.6);backdrop-filter:blur(16px);border:1px solid var(--border)}
+body.light-theme .glass{background:rgba(255,255,255,.7)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 18px;font-size:13px;font-weight:600;border-radius:8px;border:none;cursor:pointer;transition:all .3s;text-transform:uppercase;letter-spacing:.5px;outline:none}
+.btn-primary{background:linear-gradient(135deg,var(--accent),#7a0bc0);color:#fff;box-shadow:0 4px 15px rgba(188,19,254,.3)}
+.btn-primary:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 6px 20px rgba(188,19,254,.5)}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--text-main)}
+.btn-outline:hover:not(:disabled){border-color:var(--accent);color:var(--accent);background:rgba(188,19,254,.05)}
+.btn-danger{background:rgba(255,42,95,.1);color:var(--danger);border:1px solid rgba(255,42,95,.2)}
+.btn-danger:hover:not(:disabled){background:var(--danger);color:#fff}
+.btn-sm{padding:6px 12px;font-size:11px;border-radius:6px}
+.btn-block{width:100%}
+.btn:disabled{opacity:.5;cursor:not-allowed;filter:grayscale(1)}
+.icon-btn{background:none;border:none;color:var(--text-muted);font-size:18px;cursor:pointer;padding:8px;border-radius:8px}
+.icon-btn:hover{background:var(--surface-light);color:var(--accent)}
+.form-group{margin-bottom:20px;width:100%}
+.form-group label{display:block;margin-bottom:8px;font-size:13px;color:var(--text-muted);font-weight:500}
+.form-input{width:100%;padding:12px 16px;background:rgba(0,0,0,.2);border:1px solid var(--border);border-radius:8px;color:var(--text-main);outline:none;font-size:14px}
+.form-input:focus{border-color:var(--accent)}
+.badge{padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600;text-transform:uppercase;display:inline-flex;align-items:center;gap:4px}
+.badge-pending{background:rgba(255,184,0,.15);color:var(--warning);border:1px solid rgba(255,184,0,.3)}
+.badge-approved,.badge-active,.badge-success{background:rgba(0,255,102,.15);color:var(--success);border:1px solid rgba(0,255,102,.3)}
+.badge-rejected,.badge-inactive,.badge-danger{background:rgba(255,42,95,.15);color:var(--danger);border:1px solid rgba(255,42,95,.3)}
+#loader{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.8);z-index:99999;display:flex;flex-direction:column;justify-content:center;align-items:center;backdrop-filter:blur(5px)}
+.spinner{width:45px;height:45px;border:4px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{100%{transform:rotate(360deg)}}
+#toast-container{position:fixed;top:20px;right:20px;z-index:99999;display:flex;flex-direction:column;gap:10px;pointer-events:none}
+.toast{background:var(--surface);border:1px solid var(--border);padding:14px 20px;border-radius:var(--radius);color:var(--text-main);font-size:13px;font-weight:500;box-shadow:var(--shadow);pointer-events:all;display:flex;align-items:center;gap:12px;animation:slideInRight .3s}
+.toast.success i{color:var(--success)}.toast.error i{color:var(--danger)}.toast.warning i{color:var(--warning)}
+@keyframes slideInRight{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes slideOutRight{from{transform:translateX(0);opacity:1}to{transform:translateX(100%);opacity:0}}
+#auth-screen{height:100vh;height:100dvh;display:flex;justify-content:center;align-items:center;padding:20px;background-image:radial-gradient(circle at top right,rgba(188,19,254,.1),transparent 40%),radial-gradient(circle at bottom left,rgba(0,240,255,.05),transparent 40%)}
+.login-box{width:100%;max-width:420px;padding:40px;border-radius:20px;text-align:center;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.login-box::before{content:'';position:absolute;top:0;left:0;width:100%;height:4px;background:linear-gradient(90deg,var(--accent),var(--accent-secondary))}
+.login-logo{width:60px;height:60px;background:rgba(188,19,254,.1);border-radius:16px;display:flex;justify-content:center;align-items:center;font-size:28px;color:var(--accent);margin:0 auto 20px;border:1px solid rgba(188,19,254,.3)}
+#main-layout{display:none;width:100%;height:100dvh;overflow:hidden}
+.sidebar{width:var(--sidebar-width);background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;transition:.3s;z-index:1000;flex-shrink:0}
+.brand-container{height:75px;display:flex;align-items:center;padding:0 25px;border-bottom:1px solid var(--border)}
+.brand{font-size:20px;font-weight:800;letter-spacing:1px;display:flex;align-items:center;gap:10px}
+.nav-menu{flex:1;padding:20px 0;overflow-y:auto;list-style:none}
+.nav-item{padding:12px 25px;display:flex;align-items:center;gap:15px;color:var(--text-muted);cursor:pointer;transition:.3s;font-size:14px;font-weight:500;border-right:3px solid transparent;margin-bottom:5px;position:relative}
+.nav-item:hover{color:var(--text-main);background:rgba(255,255,255,.03)}
+.nav-item.active{color:var(--accent);background:rgba(188,19,254,.08);border-right-color:var(--accent)}
+.main-wrapper{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg-dark);min-width:0}
+.header{height:75px;padding:0 30px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);background:var(--surface);z-index:100;flex-shrink:0}
+.header-left{display:flex;align-items:center;gap:15px}
+.header-right{display:flex;align-items:center;gap:15px}
+.page-title-text{font-size:20px;font-weight:600}
+.content{flex:1;padding:30px;overflow-y:auto}
+.section-box{padding:25px;border-radius:var(--radius);margin-bottom:25px}
+.box-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;gap:15px;flex-wrap:wrap}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;margin-bottom:25px}
+.stat-card{padding:20px;border-radius:var(--radius);display:flex;justify-content:space-between;align-items:center;transition:.3s}
+.stat-card:hover{transform:translateY(-5px);box-shadow:var(--shadow);border-color:var(--accent)}
+.stat-info p{font-size:12px;color:var(--text-muted);margin-bottom:5px}
+.stat-info h3{font-size:24px;font-weight:700}
+.stat-icon{width:50px;height:50px;border-radius:12px;display:flex;justify-content:center;align-items:center;color:#fff;font-size:22px}
+.dashboard-grid{display:grid;grid-template-columns:2fr 1fr;gap:25px}
+.table-container{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);width:100%}
+.table-header-controls{display:flex;justify-content:space-between;align-items:center;padding:15px 20px;border-bottom:1px solid var(--border);background:rgba(0,0,0,.1);gap:15px;flex-wrap:wrap}
+.search-box{position:relative;width:300px;max-width:100%}
+.search-box input{width:100%;padding:10px 15px 10px 40px;background:var(--bg-dark);border:1px solid var(--border);border-radius:30px;color:var(--text-main);outline:none}
+.search-box i{position:absolute;left:15px;top:50%;transform:translateY(-50%);color:var(--text-muted)}
+.table-responsive{max-height:600px;overflow-y:auto;overflow-x:auto;width:100%;display:block}
+table{width:100%;border-collapse:collapse;min-width:750px}
+th{position:sticky;top:0;background:var(--surface-light);text-align:left;padding:15px 20px;font-size:12px;text-transform:uppercase;border-bottom:1px solid var(--border);z-index:10;color:var(--text-main)}
+td{padding:15px 20px;font-size:13px;border-bottom:1px solid var(--border);color:var(--text-main)}
+.add-panel-grid{display:grid;grid-template-columns:1.5fr 1fr;gap:30px}
+.panel-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:25px}
+.panel-card{display:flex;flex-direction:column;border-radius:var(--radius);overflow:hidden;transition:.3s}
+.iframe-container{position:relative;width:100%;padding-bottom:56.25%;background:#000;border-bottom:1px solid var(--border)}
+.iframe-container iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:none}
+.panel-info{padding:20px;display:flex;flex-direction:column;flex:1}
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);z-index:2000;display:flex;justify-content:center;align-items:center;opacity:0;visibility:hidden;transition:.3s;padding:15px}
+.modal-overlay:not(.hidden){opacity:1;visibility:visible}
+.modal{background:var(--surface);width:100%;max-width:650px;padding:30px;border-radius:20px;border:1px solid var(--border);box-shadow:0 20px 50px #000;transform:scale(.9);transition:.3s;max-height:90vh;overflow-y:auto}
+.modal-overlay:not(.hidden) .modal{transform:scale(1)}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:25px}
+.modal-close{background:none;border:none;color:var(--text-muted);font-size:20px;cursor:pointer}
+.sidebar-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);z-index:999}
+#sidebar-toggle{display:block}
+@media(max-width:1024px){.dashboard-grid,.add-panel-grid{grid-template-columns:1fr}}
+@media(max-width:768px){
+.sidebar{position:fixed;height:100%;transform:translateX(-100%)}
+.sidebar.open{transform:translateX(0)}
+#sidebar-toggle{display:block !important}
+.content{padding:15px}
+.header{padding:0 15px}
+.table-header-controls{flex-direction:column;align-items:flex-start}
+.search-box{width:100%}
+.stats-grid{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
+.modal{padding:20px}
+}
+</style>
+</head>
+<body>
+
+<div id="loader"><div class="spinner"></div><div style="margin-top:20px;color:var(--accent);font-weight:600;letter-spacing:2px">AUTHENTICATING...</div></div>
+<div id="toast-container"></div>
+
+<div id="auth-screen">
+<div class="login-box glass">
+<div class="login-logo"><i class="fas fa-bolt"></i></div>
+<h2>Admin Portal</h2>
+<p style="color:var(--text-muted);margin-top:8px;font-size:13px">Sign in to manage FF.PANEL.STORE</p>
+<div class="form-group" style="text-align:left;margin-top:25px"><label>Admin Email</label><input id="admin-email" type="email" class="form-input" placeholder="admin@example.com"/></div>
+<div class="form-group" style="text-align:left"><label>Password</label><input id="admin-pass" type="password" class="form-input" placeholder="••••••••"/></div>
+<button class="btn btn-primary btn-block" id="btn-login" style="padding:14px;margin-top:10px">SECURE LOGIN <i class="fas fa-arrow-right"></i></button>
+</div>
+</div>
+
+<div id="main-layout">
+<div id="sidebar-overlay" class="sidebar-overlay hidden"></div>
+
+<aside class="sidebar" id="sidebar">
+<div class="brand-container">
+<div class="brand">
+<img id="admin-brand-logo" src="" style="display:none;width:32px;height:32px;border-radius:8px;object-fit:cover"/>
+<i id="admin-brand-icon" class="fas fa-bolt" style="color:var(--accent);font-size:24px"></i>
+<span id="admin-brand-text" style="background:linear-gradient(90deg,var(--accent),var(--accent-secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent">ADMIN</span>
+</div>
+</div>
+<ul class="nav-menu">
+<li class="nav-item active" data-target="dashboard"><i class="fas fa-th-large"></i> Dashboard</li>
+<li class="nav-item" data-target="add-panel"><i class="fas fa-plus-square"></i> Add Panel</li>
+<li class="nav-item" data-target="manage-panels"><i class="fas fa-box"></i> Manage Panels</li>
+<li style="margin:15px 25px 5px;font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px">Finance & Users</li>
+<li class="nav-item" data-target="payments"><i class="fas fa-money-bill-wave"></i> API Payments</li>
+<li class="nav-item" data-target="purchases"><i class="fas fa-shopping-cart"></i> Purchases</li>
+<li class="nav-item" data-target="users"><i class="fas fa-users"></i> Users Control</li>
+<li class="nav-item" data-target="resellers"><i class="fas fa-user-tag"></i> Manage Resellers</li>
+<li style="margin:15px 25px 5px;font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px">Marketing</li>
+<li class="nav-item" data-target="promotions"><i class="fas fa-bullhorn"></i> Promotions</li>
+<li class="nav-item" data-target="coupons"><i class="fas fa-ticket-alt"></i> Coupons</li>
+<li style="margin:15px 25px 5px;font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px">Configuration</li>
+<li class="nav-item" data-target="settings"><i class="fas fa-qrcode"></i> Payment Settings</li>
+<li class="nav-item" data-target="contact"><i class="fas fa-headset"></i> Support Links</li>
+<li class="nav-item" data-target="branding"><i class="fas fa-image"></i> Site Branding</li>
+<li class="nav-item" id="btn-logout" style="color:var(--danger);margin-top:20px"><i class="fas fa-sign-out-alt"></i> Secure Logout</li>
+</ul>
+</aside>
+
+<div class="main-wrapper">
+<header class="header glass">
+<div class="header-left">
+<button id="sidebar-toggle" class="icon-btn"><i class="fas fa-bars"></i></button>
+<h2 id="page-title" class="page-title-text">Dashboard</h2>
+</div>
+<div class="header-right">
+<button id="theme-toggle" class="icon-btn" title="Toggle Theme"><i class="fas fa-sun"></i></button>
+<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-secondary));display:flex;justify-content:center;align-items:center;color:#fff;font-weight:bold;border:2px solid var(--surface)">AD</div>
+</div>
+</header>
+
+<main class="content">
+
+<section class="page-section" id="sec-dashboard">
+<div class="stats-grid">
+<div class="stat-card glass"><div class="stat-info"><p>Total Revenue</p><h3 id="stat-revenue">₹0.00</h3></div><div class="stat-icon" style="background:linear-gradient(135deg,#00ff66,#008f39)"><i class="fas fa-wallet"></i></div></div>
+<div class="stat-card glass"><div class="stat-info"><p>Total Users</p><h3 id="stat-users">0</h3></div><div class="stat-icon" style="background:linear-gradient(135deg,var(--accent),var(--accent-secondary))"><i class="fas fa-users"></i></div></div>
+<div class="stat-card glass"><div class="stat-info"><p>Total Panels</p><h3 id="stat-panels">0</h3></div><div class="stat-icon" style="background:linear-gradient(135deg,#ef4444,#b91c1c)"><i class="fas fa-box-open"></i></div></div>
+</div>
+<div class="dashboard-grid">
+<div class="section-box glass" style="min-height:350px;display:flex;flex-direction:column"><div class="box-header"><h3>Revenue (Last 7 Days)</h3></div><div style="flex:1;position:relative;width:100%"><canvas id="revenueChart"></canvas></div></div>
+<div class="section-box glass"><div class="box-header"><h3>Recent Payments</h3><button class="btn btn-outline btn-sm" onclick="document.querySelector('.nav-item[data-target=\'payments\']').click()">View All</button></div><div id="recent-payments-list"><div style="padding:20px;text-align:center;color:var(--text-muted)">Loading...</div></div></div>
+</div>
+</section>
+
+<section class="page-section hidden" id="sec-add-panel">
+<div class="add-panel-grid">
+<div class="section-box glass">
+<div class="box-header"><h3><i class="fas fa-edit" style="color:var(--accent);margin-right:8px"></i> Panel Details</h3></div>
+<div class="form-group"><label>Panel Name</label><input id="add-p-name" class="form-input" placeholder="VIP Injector v1" type="text"/></div>
+<div class="form-group"><label>YouTube Link</label><input id="add-p-yt" class="form-input" placeholder="https://youtube.com/watch?v=..." type="url"/></div>
+<div class="form-group"><label>Update File Link</label><input id="add-p-link" class="form-input" placeholder="https://t.me/..." type="url"/></div>
+<div class="form-group"><label>Feedback Link (Optional)</label><input id="add-p-feedback" class="form-input" placeholder="https://t.me/..." type="url"/></div>
+<div class="form-group"><label>Description</label><textarea id="add-p-desc" class="form-input" placeholder="- Aimbot&#10;- Auto Headshot" rows="3"></textarea></div>
+<div style="background:rgba(0,0,0,.2);padding:15px;border-radius:var(--radius);border:1px solid var(--border);margin-bottom:20px">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+<label style="margin:0;color:var(--text-main);font-weight:600"><i class="fas fa-tags" style="color:var(--accent)"></i> Pricing Plans</label>
+<button class="btn btn-outline btn-sm" id="btn-add-plan-row"><i class="fas fa-plus"></i> Add Plan</button>
+</div>
+<div id="plans-container">
+<div class="plan-row" style="display:flex;gap:10px;margin-bottom:10px">
+<input class="p-label form-input" placeholder="Plan Name" type="text" style="flex:2"/>
+<input class="p-price form-input" placeholder="Price ₹" type="number" style="flex:1"/>
+<textarea class="p-keys form-input" placeholder="keys (one per line)" rows="1" style="flex:2;font-family:monospace;font-size:12px"></textarea>
+<button class="btn btn-danger btn-sm" onclick="this.parentElement.remove();window.updateLivePreview()"><i class="fas fa-trash"></i></button>
+</div>
+</div>
+</div>
+<button class="btn btn-primary btn-block" id="btn-submit-panel"><i class="fas fa-cloud-upload-alt"></i> PUBLISH PANEL</button>
+</div>
+<div>
+<div class="box-header"><h3 style="color:var(--text-muted)"><i class="fas fa-eye"></i> Live Preview</h3></div>
+<div class="panel-card glass" id="live-preview-card" style="pointer-events:none"></div>
+</div>
+</div>
+</section>
+
+<section class="page-section hidden" id="sec-manage-panels">
+<div class="panel-grid" id="admin-panels-container"></div>
+</section>
+
+<section class="page-section hidden" id="sec-promotions">
+<div class="dashboard-grid">
+<div class="section-box glass">
+<div class="box-header"><h3><i class="fas fa-bullhorn" style="color:var(--accent);margin-right:8px"></i> Add Promotion</h3></div>
+<div class="form-group"><label>Title</label><input id="promo-title" class="form-input" placeholder="Diwali Offer" type="text"/></div>
+<div class="form-group"><label>Image URL</label><input id="promo-img" class="form-input" placeholder="https://..." type="url"/></div>
+<div class="form-group"><label>Redirect Link (Optional)</label><input id="promo-link" class="form-input" placeholder="https://..." type="url"/></div>
+<button class="btn btn-primary btn-block" id="btn-add-promo"><i class="fas fa-plus"></i> PUBLISH PROMOTION</button>
+</div>
+<div class="section-box glass">
+<div class="box-header"><h3>Active Promotions</h3></div>
+<div id="promotions-list" style="display:flex;flex-direction:column;gap:15px"></div>
+</div>
+</div>
+</section>
+
+<section class="page-section hidden" id="sec-coupons">
+<div class="dashboard-grid">
+<div class="section-box glass">
+<div class="box-header"><h3><i class="fas fa-ticket-alt" style="color:var(--accent);margin-right:8px"></i> Add Coupon</h3></div>
+<div class="form-group"><label>Code</label><input id="coupon-code" class="form-input" style="text-transform:uppercase" type="text"/></div>
+<div class="form-group"><label>Discount (%)</label><input id="coupon-discount" class="form-input" type="number" min="1" max="100"/></div>
+<div class="form-group"><label>Max Usage (empty=unlimited)</label><input id="coupon-max" class="form-input" type="number"/></div>
+<button class="btn btn-primary btn-block" id="btn-add-coupon"><i class="fas fa-plus"></i> CREATE COUPON</button>
+</div>
+<div class="table-container" style="align-self:start">
+<div class="table-header-controls"><h3 style="font-size:16px">Managed Coupons</h3></div>
+<div class="table-responsive">
+<table><thead><tr><th>Code</th><th>Discount</th><th>Usage</th><th>Status</th><th>Action</th></tr></thead><tbody id="coupons-tbody"></tbody></table>
+</div>
+</div>
+</div>
+</section>
+
+<section class="page-section hidden" id="sec-settings">
+<div class="section-box glass" style="max-width:500px;margin:0 auto">
+<div class="box-header"><h3><i class="fas fa-qrcode" style="color:var(--accent);margin-right:8px"></i> Payment Gateway Settings</h3></div>
+<p style="color:var(--text-muted);font-size:13px;margin-bottom:20px;line-height:1.6">Ye settings frontend ke liye nahi hain. API keys tumhare backend server mein save hongi.</p>
+<div class="form-group"><label>Admin API URL (Backend)</label><input id="set-api-url" class="form-input" type="url" placeholder="https://api.yourbackend.com/create-order"/></div>
+<button class="btn btn-primary btn-block" id="btn-save-settings"><i class="fas fa-save"></i> UPDATE API URL</button>
+</div>
+</section>
+
+<section class="page-section hidden" id="sec-contact">
+<div class="section-box glass" style="max-width:500px;margin:0 auto">
+<div class="box-header"><h3><i class="fas fa-headset" style="color:var(--accent);margin-right:8px"></i> Support Links</h3></div>
+<div class="form-group"><label>WhatsApp Link</label><input id="set-wa" class="form-input" placeholder="https://wa.me/..." type="url"/></div>
+<div class="form-group"><label>Telegram Login Button</label><input id="set-tg-login" class="form-input" placeholder="https://t.me/..." type="url"/></div>
+<div class="form-group"><label>Telegram Dashboard Floating Button</label><input id="set-tg-dash" class="form-input" placeholder="https://t.me/..." type="url"/></div>
+<button class="btn btn-primary btn-block" id="btn-save-contact"><i class="fas fa-save"></i> UPDATE LINKS</button>
+</div>
+</section>
+
+<section class="page-section hidden" id="sec-branding">
+<div class="section-box glass" style="max-width:500px;margin:0 auto">
+<div class="box-header"><h3><i class="fas fa-image" style="color:var(--accent);margin-right:8px"></i> Site Branding</h3></div>
+<div class="form-group"><label>Site Name</label><input id="brand-name" class="form-input" type="text"/></div>
+<div class="form-group"><label>Logo URL</label><input id="brand-logo" class="form-input" type="url"/></div>
+<button class="btn btn-primary btn-block" id="btn-save-branding"><i class="fas fa-save"></i> UPDATE BRANDING</button>
+</div>
+</section>
+
+<section class="page-section hidden" id="sec-payments">
+<div class="table-container">
+<div class="table-header-controls"><h3 style="font-size:16px">API Payments Log</h3><div class="search-box"><i class="fas fa-search"></i><input id="search-payments-input" placeholder="Search..."/></div></div>
+<div class="table-responsive"><table><thead><tr><th>Date</th><th>User</th><th>Amount</th><th>Txn ID</th><th>Status</th></tr></thead><tbody id="payments-tbody"></tbody></table></div>
+</div>
+</section>
+
+<section class="page-section hidden" id="sec-users">
+<div class="table-container">
+<div class="table-header-controls"><h3 style="font-size:16px">User Management</h3><div class="search-box"><i class="fas fa-search"></i><input id="search-users-input" placeholder="Search..."/></div></div>
+<div class="table-responsive"><table><thead><tr><th>Joined</th><th>Email</th><th>Balance</th><th>Status</th><th>Action</th></tr></thead><tbody id="users-tbody"></tbody></table></div>
+</div>
+</section>
+
+<section class="page-section hidden" id="sec-resellers">
+<div class="section-box glass">
+<div class="box-header">
+<div><h3><i class="fas fa-user-tag" style="color:var(--accent);margin-right:8px"></i> Manage Resellers</h3>
+<p style="font-size:12px;color:var(--text-muted);margin-top:6px">Promote users to resellers, set custom prices.</p></div>
+<div class="search-box"><i class="fas fa-search"></i><input id="search-resellers-input" placeholder="Search..."/></div>
+</div>
+<div class="table-responsive"><table><thead><tr><th>User</th><th>Role</th><th>Prices</th><th>Actions</th></tr></thead><tbody id="resellers-tbody"></tbody></table></div>
+</div>
+</section>
+
+<section class="page-section hidden" id="sec-purchases">
+<div class="table-container">
+<div class="table-header-controls"><h3 style="font-size:16px">Purchase History</h3><div class="search-box"><i class="fas fa-search"></i><input id="search-purchases-input" placeholder="Search..."/></div></div>
+<div class="table-responsive"><table><thead><tr><th>Date</th><th>Email</th><th>Panel & Plan</th><th>Key</th></tr></thead><tbody id="purchases-tbody"></tbody></table></div>
+</div>
+</section>
+</main>
+</div>
+</div>
+
+<div class="modal-overlay hidden" id="modal-balance">
+<div class="modal">
+<div class="modal-header"><h3>Edit User Balance</h3><button class="modal-close" onclick="closeModal('modal-balance')"><i class="fas fa-times"></i></button></div>
+<input id="edit-bal-uid" type="hidden"/>
+<div class="form-group"><label>Current ₹</label><input disabled id="edit-bal-current" class="form-input" style="color:var(--success)" type="text"/></div>
+<div class="form-group"><label>Action</label><select id="edit-bal-type" class="form-input"><option value="add">Add (+)</option><option value="deduct">Deduct (-)</option><option value="set">Set (=)</option></select></div>
+<div class="form-group"><label>Amount ₹</label><input id="edit-bal-amount" class="form-input" type="number"/></div>
+<button class="btn btn-primary btn-block" id="btn-save-balance">Confirm</button>
+</div>
+</div>
+
+<div class="modal-overlay hidden" id="modal-ban">
+<div class="modal">
+<div class="modal-header"><h3 style="color:var(--danger)"><i class="fas fa-ban"></i> Ban User</h3><button class="modal-close" onclick="closeModal('modal-ban')"><i class="fas fa-times"></i></button></div>
+<input id="ban-user-uid" type="hidden"/>
+<div class="form-group"><label>Ban Message</label><textarea id="ban-custom-msg" class="form-input" rows="3" placeholder="Account suspended."></textarea></div>
+<button class="btn btn-danger btn-block" id="btn-confirm-ban"><i class="fas fa-ban"></i> Confirm Ban</button>
+</div>
+</div>
+
+<div class="modal-overlay hidden" id="modal-reseller-prices">
+<div class="modal" style="max-width:700px">
+<div class="modal-header"><div><h3>Set Reseller Prices</h3><p id="reseller-price-user" style="font-size:12px;color:var(--text-muted);margin-top:5px"></p></div><button class="modal-close" onclick="closeModal('modal-reseller-prices')"><i class="fas fa-times"></i></button></div>
+<input id="reseller-price-uid" type="hidden"/>
+<div id="reseller-price-fields" style="display:flex;flex-direction:column;gap:15px;max-height:55vh;overflow:auto"></div>
+<button class="btn btn-primary btn-block" id="btn-save-reseller-prices" style="margin-top:20px"><i class="fas fa-save"></i> Save</button>
+</div>
+</div>
+
+<div class="modal-overlay hidden" id="modal-edit-panel">
+<div class="modal">
+<div class="modal-header"><h3>Edit Panel</h3><button class="modal-close" onclick="closeModal('modal-edit-panel')"><i class="fas fa-times"></i></button></div>
+<input id="edit-p-id" type="hidden"/>
+<div class="form-group"><label>Name</label><input id="edit-p-name" class="form-input" type="text"/></div>
+<div class="form-group"><label>YouTube</label><input id="edit-p-yt" class="form-input" type="url"/></div>
+<div class="form-group"><label>File Link</label><input id="edit-p-link" class="form-input" type="url"/></div>
+<div class="form-group"><label>Feedback</label><input id="edit-p-feedback" class="form-input" type="url"/></div>
+<div class="form-group"><label>Description</label><textarea id="edit-p-desc" class="form-input" rows="3"></textarea></div>
+<button class="btn btn-primary btn-block" id="btn-save-edit-panel">Save</button>
+</div>
+</div>
+
+<div class="modal-overlay hidden" id="modal-manage-plans">
+<div class="modal" style="max-width:650px">
+<div class="modal-header"><div><h3>Manage Plans</h3><p id="manage-plans-panel-name" style="font-size:12px;color:var(--text-muted);margin-top:3px"></p></div><button class="modal-close" onclick="closeModal('modal-manage-plans')"><i class="fas fa-times"></i></button></div>
+<input id="manage-plans-id" type="hidden"/>
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px">
+<span style="font-size:13px;font-weight:600;color:var(--accent-secondary)">Active Plans</span>
+<button class="btn btn-outline btn-sm" onclick="window.addPlanRowModal()"><i class="fas fa-plus"></i> ADD</button>
+</div>
+<div id="modal-plans-container" style="display:flex;flex-direction:column;gap:10px;max-height:50vh;overflow-y:auto;margin-bottom:20px;padding-right:5px"></div>
+<button class="btn btn-primary btn-block" id="btn-save-modal-plans"><i class="fas fa-save"></i> SAVE ALL</button>
+</div>
+</div>
+
+<div class="modal-overlay hidden" id="modal-edit-promo">
+<div class="modal">
+<div class="modal-header"><h3>Edit Promotion</h3><button class="modal-close" onclick="closeModal('modal-edit-promo')"><i class="fas fa-times"></i></button></div>
+<input id="edit-promo-id" type="hidden"/>
+<div class="form-group"><label>Title</label><input id="edit-promo-title" class="form-input" type="text"/></div>
+<div class="form-group"><label>Image URL</label><input id="edit-promo-img" class="form-input" type="url"/></div>
+<div class="form-group"><label>Redirect Link</label><input id="edit-promo-link" class="form-input" type="url"/></div>
+<button class="btn btn-primary btn-block" id="btn-save-edit-promo">Save</button>
+</div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { getDatabase, ref, get, set, update, remove, onValue, push, runTransaction, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyD-eLGwuYpLiaCRgOHqZtOvG_P8nUxFimk",
+    authDomain: "free-fire-store-a2403.firebaseapp.com",
+    databaseURL: "https://free-fire-store-a2403-default-rtdb.firebaseio.com",
+    projectId: "free-fire-store-a2403",
+    storageBucket: "free-fire-store-a2403.firebasestorage.app",
+    messagingSenderId: "483900727243",
+    appId: "1:483900727243:web:eec9688759dba6f691204e"
+};
+
+const ALLOWED_ADMINS = ["aryan.lko999@gmail.com"];
+let app, auth, db;
+try { app = initializeApp(firebaseConfig); auth = getAuth(app); db = getDatabase(app); } catch(e){ console.error(e); }
+
+const loader = document.getElementById('loader');
+let usersDataCache = {}, panelsDataCache = {}, promotionsDataCache = {}, revChart = null;
+
+window.showLoader = () => loader.classList.remove('hidden');
+window.hideLoader = () => loader.classList.add('hidden');
+window.showToast = (msg, type='success') => {
+    const container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    const icon = type==='error'?'fa-exclamation-circle':(type==='warning'?'fa-exclamation-triangle':'fa-check-circle');
+    toast.innerHTML = `<i class="fas ${icon}"></i> <span>${msg}</span>`;
+    container.appendChild(toast);
+    setTimeout(()=>{toast.style.animation='slideOutRight .3s forwards';setTimeout(()=>toast.remove(),300);},3000);
+};
+window.closeModal = id => document.getElementById(id).closest('.modal-overlay').classList.add('hidden');
+window.openModal = id => document.getElementById(id).classList.remove('hidden');
+
+document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.add('hidden');}));
+
+const themeToggle = document.getElementById('theme-toggle');
+if((localStorage.getItem('adminTheme')||'dark')==='light'){document.body.classList.add('light-theme');themeToggle.innerHTML='<i class="fas fa-moon"></i>';}
+themeToggle.onclick = () => {
+    document.body.classList.toggle('light-theme');
+    const isLight = document.body.classList.contains('light-theme');
+    localStorage.setItem('adminTheme', isLight?'light':'dark');
+    themeToggle.innerHTML = isLight?'<i class="fas fa-moon"></i>':'<i class="fas fa-sun"></i>';
+};
+
+document.querySelectorAll('.nav-item[data-target]').forEach(item=>{
+    item.addEventListener('click',()=>{
+        document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+        item.classList.add('active');
+        const target = item.getAttribute('data-target');
+        document.getElementById('page-title').innerText = item.innerText.replace(/\d+$/,'').trim();
+        document.querySelectorAll('.page-section').forEach(s=>s.classList.add('hidden'));
+        document.getElementById(`sec-${target}`).classList.remove('hidden');
+        if(window.innerWidth<=768){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebar-overlay').classList.add('hidden');}
+    });
+});
+
+document.getElementById('sidebar-toggle').onclick = ()=>{document.getElementById('sidebar').classList.add('open');document.getElementById('sidebar-overlay').classList.remove('hidden');};
+document.getElementById('sidebar-overlay').onclick = ()=>{document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebar-overlay').classList.add('hidden');};
+
+function extractYTId(url){
+    if(!url) return null;
+    if(url.length===11&&!url.includes('/')) return url;
+    const m=url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/);
+    return (m&&m[2].length===11)?m[2]:null;
+}
+
+window.animateCounter = (id,start,end,duration,isCurrency=false) => {
+    const obj=document.getElementById(id);
+    if(!obj||start===end) return;
+    let startTs=null;
+    const step=ts=>{
+        if(!startTs) startTs=ts;
+        const p=Math.min((ts-startTs)/duration,1);
+        const val=p*(end-start)+start;
+        obj.innerHTML=isCurrency?'₹'+val.toFixed(2):Math.floor(val);
+        if(p<1) requestAnimationFrame(step);
+        else obj.innerHTML=isCurrency?'₹'+end.toFixed(2):end;
+    };
+    requestAnimationFrame(step);
+};
+
+onAuthStateChanged(auth, async (user)=>{
+    if(user){
+        if(ALLOWED_ADMINS.includes(user.email)){
+            document.getElementById('auth-screen').classList.add('hidden');
+            document.getElementById('main-layout').style.display = 'flex';
+            initAdminData();
+        } else {
+            await signOut(auth);
+            showToast("Access Denied","error");
+        }
+    } else {
+        document.getElementById('main-layout').style.display = 'none';
+        document.getElementById('auth-screen').classList.remove('hidden');
+    }
+    hideLoader();
+});
+
+document.getElementById('btn-login').onclick = async () => {
+    const email = document.getElementById('admin-email').value.trim();
+    const pass = document.getElementById('admin-pass').value;
+    if(!email||!pass) return showToast("Enter credentials","error");
+    if(!ALLOWED_ADMINS.includes(email)) return showToast("Unauthorized","error");
+    showLoader();
+    try{await signInWithEmailAndPassword(auth,email,pass);}catch(e){showToast("Invalid Credentials","error");hideLoader();}
+};
+document.getElementById('btn-logout').onclick = async () => {showLoader();await signOut(auth);};
+
+function initAdminData(){
+    onValue(ref(db,'users'),snap=>{
+        usersDataCache = snap.val()||{};
+        animateCounter('stat-users',parseInt(document.getElementById('stat-users').innerText)||0,Object.keys(usersDataCache).length,1000);
+        renderUsersTable(usersDataCache);
+        renderResellersTable(usersDataCache);
+    });
+    onValue(ref(db,'panels'),snap=>{
+        panelsDataCache = snap.val()||{};
+        animateCounter('stat-panels',parseInt(document.getElementById('stat-panels').innerText)||0,Object.keys(panelsDataCache).length,1000);
+        renderPanels(panelsDataCache);
+    });
+    onValue(ref(db,'promotions'),snap=>{
+        promotionsDataCache = snap.val()||{};
+        renderPromotions(promotionsDataCache);
+    });
+    onValue(ref(db,'payments'),snap=>{
+        const payments = snap.val()||{};
+        let revenue=0, payList=[];
+        for(let k in payments){
+            const p = payments[k]; p.id=k; payList.push(p);
+            if(p.status==='approved' || p.status==='success') revenue += parseFloat(p.amount||0);
+        }
+        animateCounter('stat-revenue',parseFloat((document.getElementById('stat-revenue').innerText||'₹0').replace('₹',''))||0,revenue,1000,true);
+        payList.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
+        renderPaymentsTable(payList);
+        renderRecentPayments(payList.slice(0,5));
+        updateChart(payList);
+    });
+    onValue(ref(db,'settings/api'),snap=>{
+        const d = snap.val();
+        if(d){
+            document.getElementById('set-api-url').value = d.apiUrl||'';
+        }
+    });
+    onValue(ref(db,'support_links'),snap=>{
+        const d = snap.val();
+        if(d){
+            document.getElementById('set-wa').value = d.whatsapp||'';
+            document.getElementById('set-tg-login').value = d.telegram_login||'';
+            document.getElementById('set-tg-dash').value = d.telegram_dashboard||'';
+        }
+    });
+    onValue(ref(db,'settings/branding'),snap=>{
+        const d = snap.val();
+        if(d){
+            if(d.name) document.getElementById('admin-brand-text').innerText = d.name.toUpperCase();
+            document.getElementById('brand-name').value = d.name||'';
+            document.getElementById('brand-logo').value = d.logo||'';
+            const li = document.getElementById('admin-brand-logo'), ic = document.getElementById('admin-brand-icon');
+            if(d.logo&&d.logo.length>5){li.src=d.logo;li.style.display='inline-block';ic.style.display='none';}
+            else{li.style.display='none';ic.style.display='inline-block';}
+        }
+    });
+    onValue(ref(db,'purchases'),snap=>{
+        const all = snap.val()||{};
+        let list=[];
+        for(let uid in all){
+            for(const pushId in all[uid]){
+                const i = all[uid][pushId];
+                i.uid = uid;
+                i.pushId = pushId;
+                list.push(i);
+            }
+        }
+        list.sort((a,b)=>new Date(b.date)-new Date(a.date));
+        renderPurchasesTable(list);
+    });
+}
+
+function updateChart(payList){
+    const ctx = document.getElementById('revenueChart').getContext('2d');
+    const last7 = [...Array(7)].map((_,i)=>{const d=new Date();d.setDate(d.getDate()-i);return d.toLocaleDateString();}).reverse();
+    const rev = {}; last7.forEach(d=>rev[d]=0);
+    payList.forEach(p=>{
+        if((p.status==='approved'||p.status==='success')&&p.timestamp){
+            const d = new Date(p.timestamp).toLocaleDateString();
+            if(rev[d]!==undefined) rev[d] += parseFloat(p.amount||0);
+        }
+    });
+    const data = Object.values(rev);
+    if(revChart){revChart.data.datasets[0].data=data;revChart.update();return;}
+    Chart.defaults.color = '#888';
+    revChart = new Chart(ctx,{type:'line',data:{labels:last7,datasets:[{label:'Revenue',data,borderColor:'#bc13fe',backgroundColor:'rgba(188,19,254,.1)',borderWidth:2,fill:true,tension:.4,pointBackgroundColor:'#00f0ff',pointBorderColor:'#111',pointBorderWidth:2,pointRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:'rgba(17,17,17,.9)',callbacks:{label:c=>'₹ '+c.parsed.y}}},scales:{x:{grid:{color:'rgba(255,255,255,.05)'}},y:{grid:{color:'rgba(255,255,255,.05)'},ticks:{callback:v=>'₹'+v}}}}});
+}
+
+function renderRecentPayments(list){
+    const c = document.getElementById('recent-payments-list');
+    c.innerHTML = '';
+    if(list.length===0){c.innerHTML='<div style="padding:20px;text-align:center;color:var(--text-muted)">No recent</div>';return;}
+    list.forEach(p=>{
+        const color = (p.status==='approved'||p.status==='success')?'var(--success)':(p.status==='rejected'?'var(--danger)':'var(--warning)');
+        c.innerHTML += `<div style="display:flex;align-items:center;gap:15px;padding:12px 0;border-bottom:1px solid var(--border)">
+            <div style="width:40px;height:40px;border-radius:50%;background:var(--surface-light);display:flex;justify-content:center;align-items:center;color:var(--text-muted)"><i class="fas fa-user-circle"></i></div>
+            <div style="flex:1"><strong style="display:block;font-size:14px">${p.email||p.uid||'N/A'}</strong><span style="font-size:11px;color:var(--text-muted)">${p.timestamp?new Date(p.timestamp).toLocaleDateString():''}</span></div>
+            <div style="font-weight:700;font-size:14px;color:${color}">₹${p.amount}</div>
+        </div>`;
+    });
+}
+
+function renderPaymentsTable(list){
+    const tbody = document.getElementById('payments-tbody');
+    tbody.innerHTML = '';
+    list.forEach(p=>{
+        const email = p.email||(usersDataCache[p.uid]?usersDataCache[p.uid].email:p.uid);
+        tbody.innerHTML += `<tr><td>${p.timestamp?new Date(p.timestamp).toLocaleString():'N/A'}</td><td><strong>${email||'N/A'}</strong></td><td style="color:var(--success);font-weight:600">₹${p.amount}</td><td style="font-family:monospace;background:rgba(0,0,0,.2);padding:4px 8px;border-radius:4px">${p.txnId||p.utr||'-'}</td><td><span class="badge badge-${p.status==='success'?'active':p.status}">${p.status.toUpperCase()}</span></td></tr>`;
+    });
+}
+
+function renderUsersTable(users){
+    const tbody = document.getElementById('users-tbody');
+    tbody.innerHTML = '';
+    for(let uid in users){
+        const u = users[uid];
+        const status = u.status==='banned'?'<span class="badge badge-danger">Banned</span>':'<span class="badge badge-success">Active</span>';
+        const banBtn = u.status==='banned'?`<button class="btn btn-outline btn-sm" onclick="toggleBan('${uid}','active')"><i class="fas fa-check"></i></button>`:`<button class="btn btn-danger btn-sm" onclick="openBanModal('${uid}')"><i class="fas fa-ban"></i></button>`;
+        tbody.innerHTML += `<tr>
+            <td>${u.createdAt?new Date(u.createdAt).toLocaleDateString():'-'}</td>
+            <td><strong>${u.email||'-'}</strong><br><span style="font-size:10px;color:var(--text-muted);font-family:monospace">${uid.substring(0,16)}...</span></td>
+            <td style="color:var(--success);font-weight:bold;font-size:14px">₹${parseFloat(u.balance||0).toFixed(2)}</td>
+            <td>${status}</td>
+            <td style="display:flex;gap:5px"><button class="btn btn-primary btn-sm" onclick="openBalanceModal('${uid}',${u.balance||0})"><i class="fas fa-wallet"></i></button>${banBtn}</td>
+        </tr>`;
+    }
+}
+
+window.openBanModal = uid => {document.getElementById('ban-user-uid').value=uid;document.getElementById('ban-custom-msg').value="Your account has been suspended.";openModal('modal-ban');};
+document.getElementById('btn-confirm-ban').onclick = async () => {
+    const uid = document.getElementById('ban-user-uid').value;
+    const msg = document.getElementById('ban-custom-msg').value.trim()||"Suspended.";
+    showLoader();
+    try{await update(ref(db,`users/${uid}`),{status:'banned',banReason:msg});showToast("Banned!");closeModal('modal-ban');}
+    catch(e){showToast("Failed","error");}
+    hideLoader();
+};
+
+window.toggleBan = async (uid,status) => {
+    showLoader();
+    try{await update(ref(db,`users/${uid}`),{status,banReason:null});showToast("Unbanned!");}
+    catch(e){showToast("Error","error");}
+    hideLoader();
+};
+
+window.openBalanceModal = (uid,current) => {document.getElementById('edit-bal-uid').value=uid;document.getElementById('edit-bal-current').value=current.toFixed(2);document.getElementById('edit-bal-amount').value='';openModal('modal-balance');};
+
+document.getElementById('btn-save-balance').onclick = async () => {
+    const uid = document.getElementById('edit-bal-uid').value;
+    const current = parseFloat(document.getElementById('edit-bal-current').value);
+    const amount = parseFloat(document.getElementById('edit-bal-amount').value);
+    const type = document.getElementById('edit-bal-type').value;
+    if(isNaN(amount)||amount<0) return showToast("Enter valid amount","error");
+    let nb = current;
+    if(type==='add') nb += amount;
+    if(type==='deduct') nb = Math.max(0,nb-amount);
+    if(type==='set') nb = amount;
+    showLoader();
+    try {
+        await update(ref(db,`users/${uid}`),{balance:nb});
+    } catch(e) {
+        showToast("Balance update failed: " + e.message, "error");
+        hideLoader();
+        return;
+    }
+    if(type === 'add' && amount > 0){
+        try {
+            const userEmail = (usersDataCache[uid] && usersDataCache[uid].email) ? usersDataCache[uid].email : 'User';
+            await runTransaction(ref(db, `public_stats/${uid}/totalSpent`), t => (t || 0) + parseFloat(amount));
+            await set(ref(db, `public_stats/${uid}/email`), userEmail);
+            await set(ref(db, `public_stats/${uid}/uid`), uid);
+        } catch(pe) {}
+    }
+    showToast("✅ Balance Updated!");
+    closeModal('modal-balance');
+    hideLoader();
+};
+
+function renderPurchasesTable(list){
+    const tbody = document.getElementById('purchases-tbody');
+    tbody.innerHTML = '';
+    list.forEach(p=>{
+        const email = usersDataCache[p.uid]?usersDataCache[p.uid].email:p.uid;
+        const pn = panelsDataCache[p.panelId]?panelsDataCache[p.panelId].name:'Unknown';
+        tbody.innerHTML += `<tr><td style="font-size:12px">${p.date?new Date(p.date).toLocaleString():'N/A'}</td><td>${email}</td><td><strong>${pn}</strong><br><span class="badge badge-active" style="margin-top:4px">${p.plan||'N/A'}</span></td><td style="font-family:monospace;color:var(--accent);font-weight:bold;background:rgba(188,19,254,.1);padding:5px 10px;border-radius:6px">${p.key||'-'}</td></tr>`;
+    });
+}
+
+window.updateLivePreview = () => {
+    const name = document.getElementById('add-p-name').value||'Panel Name';
+    const ytId = extractYTId(document.getElementById('add-p-yt').value)||'dQw4w9WgXcQ';
+    let planHtml = '';
+    document.querySelectorAll('.plan-row').forEach(row=>{
+        const lbl = row.querySelector('.p-label').value||'Plan';
+        const p = row.querySelector('.p-price').value||'0';
+        if(lbl&&p) planHtml += `<span style="background:rgba(188,19,254,.1);color:var(--accent);font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid rgba(188,19,254,.3);font-weight:600;margin-right:5px;display:inline-block"><i class="fas fa-tag"></i> ${lbl} - ₹${p}</span>`;
+    });
+    document.getElementById('live-preview-card').innerHTML = `<div class="iframe-container"><iframe src="https://www.youtube.com/embed/${ytId}?rel=0&modestbranding=1" allowfullscreen></iframe></div><div class="panel-info"><div style="display:flex;justify-content:space-between;margin-bottom:10px"><strong style="font-size:16px">${name}</strong><span class="badge badge-active">Live</span></div><div style="margin:10px 0 15px">${planHtml||'<span style="color:var(--danger);font-size:11px">No plans</span>'}</div><button class="btn btn-primary btn-block" style="margin-top:auto" disabled>PURCHASE</button></div>`;
+};
+
+['add-p-name','add-p-yt'].forEach(id=>document.getElementById(id).addEventListener('input',updateLivePreview));
+document.getElementById('plans-container').addEventListener('input',e=>{if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA') updateLivePreview();});
+updateLivePreview();
+
+document.getElementById('btn-add-plan-row').onclick = () => {
+    const c = document.getElementById('plans-container');
+    const r = document.createElement('div'); r.className='plan-row';
+    r.style.cssText='display:flex;gap:10px;margin-bottom:10px';
+    r.innerHTML = `<input class="p-label form-input" placeholder="Plan Name" type="text" style="flex:2"/><input class="p-price form-input" placeholder="Price ₹" type="number" style="flex:1"/><textarea class="p-keys form-input" placeholder="keys" rows="1" style="flex:2;font-family:monospace;font-size:12px"></textarea><button class="btn btn-danger btn-sm" onclick="this.parentElement.remove();window.updateLivePreview()"><i class="fas fa-trash"></i></button>`;
+    c.appendChild(r);
+};
+
+document.getElementById('btn-submit-panel').onclick = async () => {
+    const name = document.getElementById('add-p-name').value.trim();
+    const yt = document.getElementById('add-p-yt').value.trim();
+    const link = document.getElementById('add-p-link').value.trim();
+    const fb = document.getElementById('add-p-feedback').value.trim();
+    const desc = document.getElementById('add-p-desc').value.trim();
+    if(!name||!yt||!link) return showToast("Name, YouTube, Link required","error");
+    const ytId = extractYTId(yt); if(!ytId) return showToast("Invalid YT URL","error");
+    const plans = {}; let hasPlan = false;
+    document.querySelectorAll('.plan-row').forEach((r,i)=>{
+        const lbl = r.querySelector('.p-label').value.trim();
+        const p = parseFloat(r.querySelector('.p-price').value);
+        const raw = r.querySelector('.p-keys').value.trim();
+        let keys = [];
+        if(raw) keys = raw.split(/[\n,]+/).map(k=>k.trim()).filter(Boolean);
+        if(lbl&&p>=0){plans[`plan_${i}`]={label:lbl,price:p,keys};hasPlan=true;}
+    });
+    if(!hasPlan) return showToast("Add at least one plan","error");
+    showLoader();
+    try{
+        await push(ref(db,'panels'),{name,youtube:ytId,link,feedback:fb,description:desc,status:"active",plans});
+        showToast("Panel added!");
+        ['add-p-name','add-p-yt','add-p-link','add-p-feedback','add-p-desc'].forEach(id=>document.getElementById(id).value='');
+        document.querySelector('.nav-item[data-target="manage-panels"]').click();
+    }catch(e){showToast("Error","error");}
+    hideLoader();
+};
+
+function renderPanels(panels){
+    const c = document.getElementById('admin-panels-container');
+    c.innerHTML = '';
+    for(let key in panels){
+        const p = panels[key];
+        const isActive = p.status==='active';
+        let planHtml = p.plans?Object.values(p.plans).map(pl=>{
+            let kc = 0;
+            if(Array.isArray(pl.keys)) kc = pl.keys.length;
+            else if(typeof pl.keys==='string'&&pl.keys.trim()) kc = pl.keys.split(/[\n,]+/).filter(Boolean).length;
+            return `<span style="background:rgba(188,19,254,.1);color:var(--accent);font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid rgba(188,19,254,.3);font-weight:600;display:inline-block;margin:2px"><i class="fas fa-tag"></i> ${pl.label||'Plan'} - ₹${pl.price} (${kc} keys)</span>`;
+        }).join(''):'<span style="color:var(--danger)">No plans</span>';
+        const fbStatus = p.feedback?`<a href="${p.feedback}" target="_blank" style="color:var(--accent-secondary)">View</a>`:`<span style="color:var(--danger)">Hidden</span>`;
+        const card = document.createElement('div'); card.className='panel-card glass';
+        card.innerHTML = `<div class="iframe-container"><iframe src="https://www.youtube.com/embed/${p.youtube}?rel=0&modestbranding=1" allowfullscreen></iframe></div>
+<div class="panel-info">
+<div style="display:flex;justify-content:space-between;margin-bottom:10px;align-items:center"><strong style="font-size:16px">${p.name}</strong><span class="badge ${isActive?'badge-success':'badge-danger'}">${p.status}</span></div>
+<div style="font-size:12px;color:var(--text-muted);background:rgba(0,0,0,.2);padding:10px;border-radius:8px;border:1px solid var(--border)"><div><i class="fas fa-link"></i> File: <a href="${p.link}" target="_blank" style="color:var(--accent-secondary)">Check</a></div><div style="margin-top:5px"><i class="fas fa-comment"></i> Feed: ${fbStatus}</div></div>
+<div style="margin:10px 0 15px">${planHtml}</div>
+<div style="display:flex;gap:8px;margin-top:auto;padding-top:15px;border-top:1px solid var(--border);flex-wrap:wrap">
+<button class="btn btn-outline btn-sm" style="flex:1" onclick="togglePanelStatus('${key}','${p.status}')"><i class="fas ${isActive?'fa-eye-slash':'fa-eye'}"></i> ${isActive?'Disable':'Enable'}</button>
+<button class="btn btn-primary btn-sm" onclick="openManagePlansModal('${key}')"><i class="fas fa-tags"></i> PLANS</button>
+<button class="btn btn-primary btn-sm" onclick="openEditPanel('${key}')"><i class="fas fa-edit"></i></button>
+<button class="btn btn-danger btn-sm" onclick="deletePanel('${key}')"><i class="fas fa-trash"></i></button>
+</div></div>`;
+        c.appendChild(card);
+    }
+}
+
+window.openManagePlansModal = panelId => {
+    const p = panelsDataCache[panelId]; if(!p) return;
+    document.getElementById('manage-plans-id').value = panelId;
+    document.getElementById('manage-plans-panel-name').innerText = `Panel: ${p.name}`;
+    const c = document.getElementById('modal-plans-container');
+    c.innerHTML = '';
+    if(p.plans){
+        Object.entries(p.plans).forEach(([pk,pd])=>{
+            let kv = '';
+            if(Array.isArray(pd.keys)) kv = pd.keys.join('\n');
+            else kv = pd.keys||'';
+            window.addPlanRowModal(pk,pd.label||'',pd.price||0,kv);
+        });
+    }
+    openModal('modal-manage-plans');
+};
+
+window.addPlanRowModal = (key='',label='',price=0,keys='') => {
+    const c = document.getElementById('modal-plans-container');
+    const uk = key||'plan_'+Math.random().toString(36).substr(2,9);
+    const r = document.createElement('div');
+    r.className = 'modal-plan-row';
+    r.dataset.planKey = uk;
+    r.style.cssText = 'display:flex;gap:10px;align-items:center';
+    r.innerHTML = `<input class="m-label form-input" placeholder="1H" value="${label}" style="flex:1" type="text"/><input class="m-price form-input" placeholder="16" type="number" value="${price}" style="flex:1"/><textarea class="m-keys form-input" placeholder="keys" rows="1" style="flex:2;font-family:monospace;font-size:12px">${keys}</textarea><button class="btn btn-danger btn-sm" onclick="this.parentElement.remove()"><i class="fas fa-trash"></i></button>`;
+    c.appendChild(r);
+};
+
+document.getElementById('btn-save-modal-plans').onclick = async () => {
+    const pid = document.getElementById('manage-plans-id').value;
+    const rows = document.querySelectorAll('.modal-plan-row');
+    if(rows.length===0) return showToast("At least 1 plan required","error");
+    const newPlans = {};
+    rows.forEach((r,i)=>{
+        const lbl = r.querySelector('.m-label').value.trim();
+        const pr = parseFloat(r.querySelector('.m-price').value);
+        const raw = r.querySelector('.m-keys').value.trim();
+        let keys = [];
+        if(raw) keys = raw.split(/[\n,]+/).map(k=>k.trim()).filter(Boolean);
+        if(lbl&&!isNaN(pr)) newPlans[`plan_${i}`] = {label:lbl,price:pr,keys};
+    });
+    if(Object.keys(newPlans).length===0) return showToast("Fill valid details","error");
+    showLoader();
+    try{await update(ref(db,`panels/${pid}`),{plans:newPlans});showToast("Plans saved!");closeModal('modal-manage-plans');}
+    catch(e){showToast("Failed","error");}
+    hideLoader();
+};
+
+window.togglePanelStatus = async (id,cur) => {showLoader();await update(ref(db,`panels/${id}`),{status:cur==='active'?'inactive':'active'});hideLoader();};
+window.deletePanel = async id => {if(confirm("Delete panel?")){showLoader();await remove(ref(db,`panels/${id}`));showToast("Deleted");hideLoader();}};
+window.openEditPanel = id => {
+    const p = panelsDataCache[id]; if(!p) return;
+    document.getElementById('edit-p-id').value = id;
+    document.getElementById('edit-p-name').value = p.name||'';
+    document.getElementById('edit-p-yt').value = p.youtube?`https://youtube.com/watch?v=${p.youtube}`:'';
+    document.getElementById('edit-p-link').value = p.link||'';
+    document.getElementById('edit-p-feedback').value = p.feedback||'';
+    document.getElementById('edit-p-desc').value = p.description||'';
+    openModal('modal-edit-panel');
+};
+
+document.getElementById('btn-save-edit-panel').onclick = async () => {
+    const id = document.getElementById('edit-p-id').value;
+    const ytId = extractYTId(document.getElementById('edit-p-yt').value);
+    if(!ytId) return showToast("Invalid YT","error");
+    showLoader();
+    try{
+        await update(ref(db,`panels/${id}`),{name:document.getElementById('edit-p-name').value,youtube:ytId,link:document.getElementById('edit-p-link').value,feedback:document.getElementById('edit-p-feedback').value,description:document.getElementById('edit-p-desc').value});
+        showToast("Updated!");closeModal('modal-edit-panel');
+    }catch(e){showToast("Failed","error");}
+    hideLoader();
+};
+
+document.getElementById('btn-save-settings').onclick = async () => {
+    showLoader();
+    try{await set(ref(db,'settings/api'),{apiUrl:document.getElementById('set-api-url').value});showToast("API URL Saved!");}
+    catch(e){showToast("Failed","error");}
+    hideLoader();
+};
+
+document.getElementById('btn-save-contact').onclick = async () => {
+    showLoader();
+    try{
+        await set(ref(db,'support_links'),{
+            whatsapp:document.getElementById('set-wa').value.trim(),
+            telegram_login:document.getElementById('set-tg-login').value.trim(),
+            telegram_dashboard:document.getElementById('set-tg-dash').value.trim()
+        });
+        showToast("Saved!");
+    }catch(e){showToast("Failed","error");}
+    hideLoader();
+};
+
+document.getElementById('btn-save-branding').onclick = async () => {
+    showLoader();
+    try{await set(ref(db,'settings/branding'),{name:document.getElementById('brand-name').value,logo:document.getElementById('brand-logo').value});showToast("Saved!");}
+    catch(e){showToast("Failed","error");}
+    hideLoader();
+};
+
+function isResellerUser(u){return !!(u&&(u.role==='reseller'||u.isReseller===true));}
+
+function renderResellersTable(users){
+    const tbody = document.getElementById('resellers-tbody');
+    if(!tbody) return;
+    const q = (document.getElementById('search-resellers-input')?.value||'').trim().toLowerCase();
+    const rows = Object.entries(users||{}).filter(([uid,u])=>{
+        const email = String((u&&u.email)||'').toLowerCase();
+        return !q||email.includes(q)||uid.toLowerCase().includes(q);
+    });
+    if(!rows.length){tbody.innerHTML='<tr><td colspan="4" style="text-align:center;color:var(--text-muted)">No users</td></tr>';return;}
+    tbody.innerHTML = rows.map(([uid,u])=>{
+        const r = isResellerUser(u);
+        const email = String((u&&u.email)||'N/A');
+        const safeEmail = email.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        const safeUid = uid.replace(/[^a-zA-Z0-9_-]/g,'');
+        const role = r?'<span class="badge badge-success">Reseller</span>':'<span class="badge" style="background:rgba(136,136,136,.12);color:var(--text-muted);border:1px solid var(--border)">Regular</span>';
+        const toggle = r?`<button class="btn btn-danger btn-sm" onclick="window.setResellerRole('${safeUid}',false)"><i class="fas fa-user-minus"></i> Remove</button>`:`<button class="btn btn-primary btn-sm" onclick="window.setResellerRole('${safeUid}',true)"><i class="fas fa-user-plus"></i> Make Reseller</button>`;
+        const price = r?`<button class="btn btn-outline btn-sm" onclick="window.openResellerPrices('${safeUid}')"><i class="fas fa-tags"></i> Prices</button>`:'<span style="color:var(--text-muted);font-size:12px">-</span>';
+        return `<tr><td><strong>${safeEmail}</strong><br><span style="font-size:10px;color:var(--text-muted);font-family:monospace">${safeUid.substring(0,16)}...</span></td><td>${role}</td><td>${price}</td><td>${toggle}</td></tr>`;
+    }).join('');
+}
+
+document.getElementById('search-resellers-input')?.addEventListener('input',()=>renderResellersTable(usersDataCache));
+
+window.setResellerRole = async (uid,make) => {
+    if(!uid||!usersDataCache[uid]) return showToast("User not found","error");
+    const email = usersDataCache[uid].email||uid;
+    if(!confirm(`${make?'Make':'Remove'} reseller for ${email}?`)) return;
+    showLoader();
+    try{
+        await update(ref(db,`users/${uid}`),make?{role:'reseller',isReseller:true}:{role:'user',isReseller:false});
+        showToast(make?"Promoted!":"Removed!");
+    }catch(e){showToast("Failed","error");}
+    hideLoader();
+};
+
+window.openResellerPrices = async uid => {
+    const u = usersDataCache[uid];
+    if(!u||!isResellerUser(u)) return showToast("Not a reseller","error");
+    document.getElementById('reseller-price-uid').value = uid;
+    document.getElementById('reseller-price-user').textContent = u.email||uid;
+    const c = document.getElementById('reseller-price-fields');
+    c.innerHTML = '<p style="color:var(--text-muted)">Loading...</p>';
+    openModal('modal-reseller-prices');
+    try{
+        const snap = await get(ref(db,`resellerPrices/${uid}`));
+        const ov = snap.val()||{};
+        let html = '';
+        for(const [pid,p] of Object.entries(panelsDataCache||{})){
+            if(!p||!p.plans) continue;
+            html += `<div style="border:1px solid var(--border);border-radius:10px;padding:14px">`;
+            html += `<h4 style="margin-bottom:12px;color:var(--accent)">${String(p.name||'Panel').replace(/</g,'&lt;')}</h4>`;
+            for(const [planId,plan] of Object.entries(p.plans)){
+                const orig = Number(plan.price);
+                const cur = ov?.[pid]?.[planId];
+                const val = cur===undefined||cur===null?'':String(cur);
+                const label = String(plan.label||planId).replace(/</g,'&lt;');
+                html += `<div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(110px,180px);gap:12px;align-items:center;margin-top:8px"><div><div style="font-size:13px">${label}</div><div style="font-size:11px;color:var(--text-muted)">Regular: ₹${isFinite(orig)?orig:'N/A'}</div></div><input class="form-input reseller-price-input" type="number" min="0" step="0.01" data-panel-id="${pid}" data-plan-id="${planId}" value="${val}" placeholder="Default"></div>`;
+            }
+            html += '</div>';
+        }
+        c.innerHTML = html||'<p style="color:var(--text-muted)">No panels</p>';
+    }catch(e){c.innerHTML='<p style="color:var(--danger)">Failed to load</p>';}
+};
+
+document.getElementById('btn-save-reseller-prices').onclick = async () => {
+    const uid = document.getElementById('reseller-price-uid').value;
+    if(!uid||!isResellerUser(usersDataCache[uid])) return showToast("Invalid","error");
+    const inputs = document.querySelectorAll('#reseller-price-fields .reseller-price-input');
+    showLoader();
+    try{
+        for(const inp of inputs){
+            const r = ref(db,`resellerPrices/${uid}/${inp.dataset.panelId}/${inp.dataset.planId}`);
+            if(inp.value.trim()==='') await remove(r);
+            else await set(r,Number(inp.value));
+        }
+        showToast("Prices saved!");
+        closeModal('modal-reseller-prices');
+    }catch(e){showToast("Failed","error");}
+    hideLoader();
+};
+
+document.getElementById('btn-add-promo').onclick = async () => {
+    const title = document.getElementById('promo-title').value.trim();
+    const image = document.getElementById('promo-img').value.trim();
+    const link = document.getElementById('promo-link').value.trim();
+    if(!title) return showToast("Title required","error");
+    showLoader();
+    try{
+        await push(ref(db,'promotions'),{title,image,link,status:true,createdAt:serverTimestamp()});
+        showToast("Added!");
+        document.getElementById('promo-title').value = '';
+        document.getElementById('promo-img').value = '';
+        document.getElementById('promo-link').value = '';
+    }catch(e){showToast("Failed","error");}
+    hideLoader();
+};
+
+function renderPromotions(promotions){
+    const list = document.getElementById('promotions-list');
+    list.innerHTML = '';
+    const arr = Object.entries(promotions).map(([id,d])=>({id,...d}));
+    arr.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+    if(arr.length===0){list.innerHTML='<div style="color:var(--text-muted);font-size:13px;text-align:center;padding:20px">No promotions</div>';return;}
+    arr.forEach(p=>{
+        const isActive = p.status===true||p.status==="true";
+        const img = p.image?`<img src="${p.image}" style="width:100%;height:120px;object-fit:cover;border-radius:8px;border:1px solid var(--border)">`:'';
+        list.innerHTML += `<div style="background:rgba(0,0,0,.2);padding:15px;border-radius:8px;border:1px solid var(--border);display:flex;flex-direction:column;gap:12px"><div style="display:flex;justify-content:space-between;align-items:center"><strong>${p.title}</strong><span class="badge ${isActive?'badge-success':'badge-danger'}">${isActive?'Active':'Disabled'}</span></div>${img}<div style="display:flex;gap:10px"><button class="btn btn-outline btn-sm" style="flex:1" onclick="window.togglePromo('${p.id}',${isActive})">${isActive?'Disable':'Enable'}</button><button class="btn btn-primary btn-sm" onclick="window.openEditPromo('${p.id}')">Edit</button><button class="btn btn-danger btn-sm" onclick="window.deletePromo('${p.id}')">Delete</button></div></div>`;
+    });
+}
+
+window.togglePromo = async (id,cur) => {showLoader();try{await update(ref(db,`promotions/${id}`),{status:!cur});showToast("Updated");}catch(e){showToast("Failed","error");}hideLoader();};
+window.deletePromo = async id => {if(!confirm("Delete?"))return;showLoader();try{await remove(ref(db,`promotions/${id}`));showToast("Deleted");}catch(e){showToast("Failed","error");}hideLoader();};
+window.openEditPromo = id => {
+    const p = promotionsDataCache[id]; if(!p) return;
+    document.getElementById('edit-promo-id').value = id;
+    document.getElementById('edit-promo-title').value = p.title||'';
+    document.getElementById('edit-promo-img').value = p.image||'';
+    document.getElementById('edit-promo-link').value = p.link||'';
+    openModal('modal-edit-promo');
+};
+document.getElementById('btn-save-edit-promo').onclick = async () => {
+    const id = document.getElementById('edit-promo-id').value;
+    const title = document.getElementById('edit-promo-title').value.trim();
+    if(!title) return showToast("Title required","error");
+    showLoader();
+    try{await update(ref(db,`promotions/${id}`),{title,image:document.getElementById('edit-promo-img').value.trim(),link:document.getElementById('edit-promo-link').value.trim()});showToast("Updated!");closeModal('modal-edit-promo');}
+    catch(e){showToast("Failed","error");}
+    hideLoader();
+};
+
+let coupons = JSON.parse(localStorage.getItem("coupons"))||[];
+function saveCoupons(){localStorage.setItem("coupons",JSON.stringify(coupons));}
+function renderCoupons(){
+    const tbody = document.getElementById('coupons-tbody');
+    tbody.innerHTML = '';
+    if(coupons.length===0){tbody.innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--text-muted)">No coupons</td></tr>';return;}
+    coupons.forEach(c=>{
+        tbody.innerHTML += `<tr><td><strong style="color:var(--accent);font-family:monospace">${c.code}</strong></td><td style="color:var(--success)">${c.discount}%</td><td>${c.used} / ${c.maxUse||'∞'}</td><td><span class="badge ${c.status?'badge-success':'badge-danger'}">${c.status?'Active':'Off'}</span></td><td style="display:flex;gap:5px"><button class="btn btn-outline btn-sm" onclick="window.toggleCoupon('${c.code}')">${c.status?'Off':'On'}</button><button class="btn btn-danger btn-sm" onclick="window.deleteCoupon('${c.code}')"><i class="fas fa-trash"></i></button></td></tr>`;
+    });
+}
+document.getElementById('btn-add-coupon').onclick = () => {
+    const code = document.getElementById('coupon-code').value.trim().toUpperCase();
+    const disc = parseInt(document.getElementById('coupon-discount').value);
+    const max = document.getElementById('coupon-max').value?parseInt(document.getElementById('coupon-max').value):null;
+    if(!code||isNaN(disc)) return showToast("Valid code & discount required","error");
+    coupons.push({code,discount:disc,maxUse:max,used:0,status:true});
+    saveCoupons();renderCoupons();showToast("Created!");
+    document.getElementById('coupon-code').value = '';
+    document.getElementById('coupon-discount').value = '';
+    document.getElementById('coupon-max').value = '';
+};
+window.toggleCoupon = code => {const c = coupons.find(x=>x.code===code);if(c){c.status=!c.status;saveCoupons();renderCoupons();showToast("Updated");}};
+window.deleteCoupon = code => {if(confirm("Delete?")){coupons = coupons.filter(x=>x.code!==code);saveCoupons();renderCoupons();showToast("Deleted");}};
+renderCoupons();
+
+['users','payments','purchases'].forEach(t=>{
+    document.getElementById(`search-${t}-input`)?.addEventListener('input',e=>{
+        const term = e.target.value.toLowerCase();
+        document.querySelectorAll(`#${t}-tbody tr`).forEach(r=>{
+            r.style.display = r.innerText.toLowerCase().includes(term)?'':'none';
+        });
+    });
+});
+</script>
+</body>
+</html>
